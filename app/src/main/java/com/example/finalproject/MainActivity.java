@@ -22,9 +22,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        FirestoreDB db = new FirestoreDB();
+        FirebaseDB db = new FirebaseDB();
+        /*FirestoreDB db = new FirestoreDB();
+        db.register("Tomer", "tomer", "0509014589");
         db.login("tomer", "test");
-        db.register("Test", "test", "0509014589");
+        db.register("Test", "test", "0509014589");*/
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         getSupportFragmentManager().beginTransaction().replace(R.id.container, homeFragement).commit();
