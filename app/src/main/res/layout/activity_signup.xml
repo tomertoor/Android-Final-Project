@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Signup">
-
-
+    android:theme="@style/Theme.AppCompat.NoActionBar"
+    tools:context=".SignupActivity">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/background"
+        android:theme="@style/Theme.AppCompat.NoActionBar"
+
         tools:context=".MainActivity">
 
         <EditText
@@ -104,11 +106,11 @@
             android:layout_below="@id/password"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="181dp"
+            android:layout_marginTop="12dp"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
             android:backgroundTint="@color/design_default_color_secondary"
-            android:text="LOGIN" />
+            android:text="SIGNUP" />
 
         <TextView
             android:id="@+id/btnHaveAccount"
@@ -117,9 +119,10 @@
             android:layout_below="@id/btnLogin"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="34dp"
+            android:layout_marginTop="-3dp"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
+            android:onClick="haveAccount"
             android:text="Already have an account?"
             android:textColor="@color/black" />
 
@@ -133,10 +136,11 @@
 
 
         <LinearLayout
+            android:id="@+id/socialicons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/socialicons"
             android:layout_alignParentBottom="true"
+            android:layout_marginBottom="2dp"
             android:gravity="center">
 
 
@@ -144,20 +148,22 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_margin="20dp"
-                android:src="@drawable/google"/>
+                android:src="@drawable/google" />
+
             <ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_margin="20dp"
-                android:src="@drawable/fb"/>
+                android:src="@drawable/fb" />
+
             <ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_margin="20dp"
-                android:src="@drawable/twitter"/>
+                android:src="@drawable/twitter" />
 
         </LinearLayout>
 
 
     </RelativeLayout>
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

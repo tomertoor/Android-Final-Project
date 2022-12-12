@@ -18,6 +18,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.Serializable;
+
 public class FirebaseDB {
     private FirebaseAuth auth;
     private FirebaseFirestore fs;
@@ -31,7 +33,7 @@ public class FirebaseDB {
 
     }
 
-    class User
+    class User implements Serializable
     {
         public String email, password, fullName, username;
         User(String email, String password, String fullName, String username)
@@ -53,10 +55,16 @@ public class FirebaseDB {
         User user = new User(email, password, fullName, username);
         boolean exists;
         Task<SignInMethodQueryResult> task =  this.auth.fetchSignInMethodsForEmail(email);
+        //auth.createUserWithEmailAndPassword(email, password);
         boolean isNewUser =  task.getResult().getSignInMethods().isEmpty();
         if(isNewUser)
         {
-            auth.createUserWithEmailAndPassword(email, password);
+            auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    int x = 5;
+                }
+            });
             fs.collection("users").document(email).set(user);
             return SIGNUP_RESULTS.SUCCESS;
         }
