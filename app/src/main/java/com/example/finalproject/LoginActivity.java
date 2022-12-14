@@ -36,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("user", user);
+        startActivity(intent);
 
     }
     public void dontHaveAccount(View view)
