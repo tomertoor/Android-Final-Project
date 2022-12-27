@@ -29,15 +29,17 @@ public class LoginActivity extends AppCompatActivity {
         String username = etUsername.getText().toString();
         String password = etPassword.getText().toString();
         FirebaseDB db = new FirebaseDB();
-        FirebaseUser user = db.login(username, password);
-        if(user == null)
-        {
-            Toast.makeText(this,"Credentials do not match", Toast.LENGTH_SHORT).show();
-        }
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("user", user);
-        startActivity(intent);
 
+        if (db.login(username, password))
+        {
+            setResult(RESULT_OK, intent);;
+        }
+        else
+        {
+            setResult(RESULT_CANCELED, intent);
+        }
+        finish();
     }
     public void dontHaveAccount(View view)
     {

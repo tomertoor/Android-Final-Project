@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+
 public class SignupActivity extends AppCompatActivity {
 
     EditText etUsername, etPassword, etEmail, etFullname;
@@ -28,14 +30,30 @@ public class SignupActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void signup(View view)
-    {
+    public void signup(View view) {
         String username, password, email, fullname;
         username = etUsername.getText().toString();
         password = etPassword.getText().toString();
         email = etEmail.getText().toString();
         fullname = etFullname.getText().toString();
         FirebaseDB db = new FirebaseDB();
-        db.register(email, password, fullname, username);
+        try
+        {
+            FirebaseDB.SIGNUP_RESULTS result = db.register(email, password, fullname, username);
+        }
+        catch (FirebaseAuthInvalidCredentialsException e)
+        {
+            return;
+        }
+        Intent intent = new Intent();
+        if (db.login(email, password))
+        {
+            setResult(RESULT_OK, intent);
+            finish();
+        }
+        else
+        {
+            setResult(RESULT_CANCELED, intent);
+        }
     }
 }
