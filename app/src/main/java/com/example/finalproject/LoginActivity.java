@@ -13,6 +13,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class LoginActivity extends AppCompatActivity {
 
     EditText etUsername, etPassword;
+    Intent intent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getSupportActionBar().hide();
@@ -20,7 +21,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         etUsername = findViewById(R.id.username);
         etPassword = findViewById(R.id.password);
-        Intent intent = getIntent();
+        intent = getIntent();
 
     }
 
@@ -29,21 +30,20 @@ public class LoginActivity extends AppCompatActivity {
         String username = etUsername.getText().toString();
         String password = etPassword.getText().toString();
         FirebaseDB db = new FirebaseDB();
-        Intent intent = new Intent(this, MainActivity.class);
 
         if (db.login(username, password))
         {
             setResult(RESULT_OK, intent);;
+            finish();
         }
         else
         {
             setResult(RESULT_CANCELED, intent);
         }
-        finish();
     }
     public void dontHaveAccount(View view)
     {
-        Intent intent = new Intent(this, SignupActivity.class);
-        startActivity(intent);
+        setResult(RESULT_CANCELED, intent);
+        finish();
     }
 }

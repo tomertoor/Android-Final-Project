@@ -26,6 +26,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
@@ -33,6 +34,8 @@ public class ParkingMap extends Fragment implements OnMapReadyCallback, Location
     GoogleMap map;
     protected LocationManager locationManager;
     protected LocationListener locationListener;
+    public static LatLng currentLocation;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -45,7 +48,6 @@ public class ParkingMap extends Fragment implements OnMapReadyCallback, Location
 
         // Async map
         supportMapFragment.getMapAsync(this);
-        /*ActivityCompat.requestPermissions();
         ActivityResultLauncher<String[]> locationPermissionRequest =
                 registerForActivityResult(new ActivityResultContracts
                                 .RequestMultiplePermissions(), result -> {
@@ -65,7 +67,7 @@ public class ParkingMap extends Fragment implements OnMapReadyCallback, Location
         locationPermissionRequest.launch(new String[] {
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
-        });*/
+        });
 
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
@@ -74,14 +76,15 @@ public class ParkingMap extends Fragment implements OnMapReadyCallback, Location
     @Override
     public void onLocationChanged(Location location) {
         LatLng newLocation = new LatLng(location.getLatitude(), location.getLongitude());
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(newLocation, 0f));
-        map.getUiSettings().setMyLocationButtonEnabled(false);
+        ParkingMap.currentLocation = newLocation;
 
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        map = googleMap;
+        this.map = googleMap;
+        this.map.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.mapstyle));
+        this.map.setMyLocationEnabled(true);
         // Add a marker in Sydney and move the camera
         /*LatLng
         LatLng sydney = new LatLng(-34, 151);
