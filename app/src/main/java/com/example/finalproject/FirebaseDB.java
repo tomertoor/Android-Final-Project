@@ -24,6 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FirebaseDB {
@@ -128,12 +129,13 @@ public class FirebaseDB {
     {
         this.fs.collection(PARKING_COLLECTION).document(parking.parkerName).set(parking);
     }
-    public List<DocumentSnapshot> getParkings()
+    public List<Parking> getParkings()
     {
-        List<DocumentSnapshot> parkingList = this.fs.collection("parking").get().getResult().getDocuments();
-        for(DocumentSnapshot i : parkingList)
+        List<Parking> parkingList = new ArrayList<>();
+        List<DocumentSnapshot> parkingCollection = this.fs.collection("parking").get().getResult().getDocuments();
+        for(DocumentSnapshot i : parkingCollection)
         {
-            String x = i.toString();
+            parkingList.add(ParkingManager.convertMapToParking(i.getData()));
         }
         return parkingList;
     }

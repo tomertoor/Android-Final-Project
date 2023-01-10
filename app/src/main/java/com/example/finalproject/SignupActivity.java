@@ -94,7 +94,7 @@ public class SignupActivity extends AppCompatActivity {
             setResult(RESULT_CANCELED, intent);
         }
     }
-    public boolean isNameValid(String firstname)
+    public boolean isNameValid(String name)
     {
         /*if (firstname.length() == 0) {
             return false;
@@ -109,8 +109,8 @@ public class SignupActivity extends AppCompatActivity {
             }
         }
         return true;*/
-        String expression = "^[a-zA-Z\\s]+";
-        return firstname.matches(expression);
+        String expression = "^[a-zA-Z ]*$";
+        return name.matches(expression);
     }
     public  boolean isEmailValid(String email)
     {
@@ -124,15 +124,7 @@ public class SignupActivity extends AppCompatActivity {
 
     public boolean isPasswordValid(String password)
     {
-        String checkPassword = "^" +
-                "(?=.*[0-9])" +         //at least 1 digit
-                "(?=.*[a-z])" +         //at least 1 lower case letter
-                "(?=.*[A-Z])" +         //at least 1 upper case letter
-                "(?=.*[a-zA-Z])" +      //any letter
-                "(?=.*[@#$%^&+=])" +    //at least 1 special character
-                "(?=S+$)" +           //no white spaces
-                ".{4,}" +               //at least 4 characters
-                "$";
+        String checkPassword = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
         if (password.isEmpty())
             return false;
         else if (!password.matches(checkPassword))

@@ -33,6 +33,8 @@ import com.google.firebase.firestore.GeoPoint;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static boolean isParking = false;
+
     BottomNavigationView bottomNavigationView;
     Settings settingsFragment = new Settings();
     ParkingMap mapFragment = new ParkingMap();
@@ -102,13 +104,23 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        db.addParking(new FirebaseDB.Parking(new GeoPoint(ParkingMap.currentLocation.latitude, ParkingMap.currentLocation.longitude), Timestamp.now(), loggedUser.username));//loggedUser.username));
+                        if(isParking)
+                        {
+                            db.removeParking(FirebaseDB.currentUser.username);
+                            btnAddParking.setImageResource(R.drawable.ic_baseline_add_24);
+                            btnAddParking.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.add_parking)));
+                        }
+                        else
+                        {
+                            db.addParking(new FirebaseDB.Parking(new GeoPoint(ParkingMap.currentLocation.latitude, ParkingMap.currentLocation.longitude), Timestamp.now(), loggedUser.username));//loggedUser.username));
+                            btnAddParking.setImageResource(R.drawable.ic_baseline_remove_24);
+                            btnAddParking.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.remove_parking)));
+
+                        }
                     }
                 });
         builder.setNegativeButton("No", null);
         builder.show();
-        btnAddParking.setImageResource(R.drawable.ic_baseline_remove_24);
-        btnAddParking.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.remove_parking)));
 
     }
 }

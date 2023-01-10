@@ -8,4 +8,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="remove_parking">#F44336</color>
+    <color name="add_parking">#FF03DAC5</color>
+
 </resources>

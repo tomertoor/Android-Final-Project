@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,6 +86,7 @@ public class ParkingMap extends Fragment implements OnMapReadyCallback, Location
         this.map = googleMap;
         this.map.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.mapstyle));
         this.map.setMyLocationEnabled(true);
+        new Handler().postDelayed(() -> {}, 1000 * 20);
         // Add a marker in Sydney and move the camera
         /*LatLng
         LatLng sydney = new LatLng(-34, 151);
