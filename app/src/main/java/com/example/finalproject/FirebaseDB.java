@@ -22,6 +22,7 @@ import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -132,7 +133,10 @@ public class FirebaseDB {
     public List<Parking> getParkings()
     {
         List<Parking> parkingList = new ArrayList<>();
-        List<DocumentSnapshot> parkingCollection = this.fs.collection("parking").get().getResult().getDocuments();
+        //List<DocumentSnapshot> parkingCollection = this.fs.collection("parking").get().getResult().getDocuments();
+        Task<QuerySnapshot> task = this.fs.collection("parkings").get();
+        while(!task.isComplete()) {}
+        List<DocumentSnapshot> parkingCollection = task.getResult().getDocuments();
         for(DocumentSnapshot i : parkingCollection)
         {
             parkingList.add(ParkingManager.convertMapToParking(i.getData()));

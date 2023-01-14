@@ -15,7 +15,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -29,6 +31,8 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.GeoPoint;
+
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -59,10 +63,10 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        FirebaseDB.Parking parking = new FirebaseDB.Parking(new GeoPoint(0,0), Timestamp.now(), "tomertom150@gmail.com");
         db = new FirebaseDB();
-        db.addParking(parking);
+        //FirebaseDB.Parking parking = new FirebaseDB.Parking(new GeoPoint(0,0), Timestamp.now(), "tomertom150@gmail.com");
+        //
+        //db.addParking(parking);
         if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED) {
 
@@ -71,11 +75,15 @@ public class MainActivity extends AppCompatActivity {
                             Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.ACCESS_COARSE_LOCATION},
                     0);        }
-        Intent signupIntent = new Intent(this, SignupActivity.class);
-        getUser.launch(signupIntent);
+        db.login("tomer@gmail.com", "tomer123!");
+        loggedUser = FirebaseDB.currentUser;
+
+        //Intent signupIntent = new Intent(this, SignupActivity.class);
+        //getUser.launch(signupIntent);
         btnAddParking = findViewById(R.id.addParking);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         //getSupportFragmentManager().beginTransaction().replace(R.id.container, homeFragement).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, mapFragment).commit();
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -112,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         else
                         {
-                            db.addParking(new FirebaseDB.Parking(new GeoPoint(ParkingMap.currentLocation.latitude, ParkingMap.currentLocation.longitude), Timestamp.now(), loggedUser.username));//loggedUser.username));
+                            db.addParking(new FirebaseDB.Parking(new GeoPoint(ParkingMap.currentLocation.latitude, ParkingMap.currentLocation.longitude), Timestamp.now(), loggedUser.email));//loggedUser.username));
                             btnAddParking.setImageResource(R.drawable.ic_baseline_remove_24);
                             btnAddParking.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.remove_parking)));
 
@@ -123,4 +131,6 @@ public class MainActivity extends AppCompatActivity {
         builder.show();
 
     }
+
+
 }
