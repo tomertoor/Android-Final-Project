@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:onClick="openSearchMenu"
+    tools:context=".SearchParkingFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <EditText
+            android:id="@+id/searchbar"
+            android:layout_width="342dp"
+            android:layout_height="45dp"
+            android:background="#130C0C"
+            android:backgroundTint="#252121"
+            android:drawableRight="@android:drawable/ic_menu_search"
+            android:gravity="left|center_vertical"
+            android:paddingLeft="20dp"
+            android:paddingRight="10dp"
+            android:hint="Where do you want to go?"
+            android:onClick=""
+            android:textColor="#7A7373"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.023" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

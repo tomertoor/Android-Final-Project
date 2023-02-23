@@ -86,7 +86,7 @@ public class FirebaseDB {
     {
         User user = new User(email, password, fullName, username);
         boolean exists;
-        Task<SignInMethodQueryResult> task =  this.auth.fetchSignInMethodsForEmail(email);
+        Task<SignInMethodQueryResult> task = this.auth.fetchSignInMethodsForEmail(email);
         boolean isNewUser =  task.getResult().getSignInMethods().isEmpty();
         if(isNewUser)
         {

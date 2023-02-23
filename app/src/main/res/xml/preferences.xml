@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:summary="Parking "
+        android:title="Parking settings" >
+        <SwitchPreference
+            android:key="automation"
+            android:summary="Off/On"
+            android:title="Manual/Automatic Parking" />
+        <CheckBoxPreference
+            android:key="automation"
+            android:summary="On/Off"
+            android:title="Manual/Automatic Parking" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:summary="Measure units, "
+        android:title="Visibility" >
+        <CheckBoxPreference
+            android:key="speed"
+            android:summary="On/Off"
+            android:title="Keep me logged in" />
+    </PreferenceCategory>
+</PreferenceScreen>

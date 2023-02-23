@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
     Settings settingsFragment = new Settings();
     ParkingMap mapFragment = new ParkingMap();
+    SearchParkingFragment searchMenu = new SearchParkingFragment();
     FirebaseDB.User loggedUser;
     FloatingActionButton btnAddParking;
     FirebaseDB db;
@@ -74,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[] {
                             Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.ACCESS_COARSE_LOCATION},
-                    0);        }
+                    0);
+        }
         db.login("tomer@gmail.com", "tomer123!");
         loggedUser = FirebaseDB.currentUser;
 
@@ -82,21 +84,23 @@ public class MainActivity extends AppCompatActivity {
         //getUser.launch(signupIntent);
         btnAddParking = findViewById(R.id.addParking);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        //getSupportFragmentManager().beginTransaction().replace(R.id.container, homeFragement).commit();
+
         getSupportFragmentManager().beginTransaction().replace(R.id.container, mapFragment).commit();
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                item.setChecked(true);
                 switch(item.getItemId())
                 {
-                    //case R.id.home:
-                    //  getSupportFragmentManager().beginTransaction().replace(R.id.container, exampleFragment).commit();
-                    //break;
                     case R.id.home:
                         getSupportFragmentManager().beginTransaction().replace(R.id.container, mapFragment).commit();
+
+                        break;
+                    case R.id.search:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container, searchMenu).commit();
                         break;
                     case R.id.settings:
-                        //getSupportFragmentManager().beginTransaction().replace(R.id.container, settingsFragment).commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container, settingsFragment).commit();
                         break;
                 }
                 return false;
@@ -114,16 +118,17 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         if(isParking)
                         {
-                            db.removeParking(FirebaseDB.currentUser.username);
+                            db.removeParking(FirebaseDB.currentUser.email);
                             btnAddParking.setImageResource(R.drawable.ic_baseline_add_24);
                             btnAddParking.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.add_parking)));
+                            isParking = false;
                         }
                         else
                         {
                             db.addParking(new FirebaseDB.Parking(new GeoPoint(ParkingMap.currentLocation.latitude, ParkingMap.currentLocation.longitude), Timestamp.now(), loggedUser.email));//loggedUser.username));
                             btnAddParking.setImageResource(R.drawable.ic_baseline_remove_24);
                             btnAddParking.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.remove_parking)));
-
+                            isParking = true;
                         }
                     }
                 });
@@ -132,5 +137,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void searchFragment()
+    {
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, searchMenu).commit();
+    }
 
 }

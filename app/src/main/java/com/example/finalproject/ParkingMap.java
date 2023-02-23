@@ -124,7 +124,7 @@ public class ParkingMap extends Fragment implements OnMapReadyCallback, Location
                     handler.postDelayed(this, 5000);
                     FirebaseDB db = new FirebaseDB();
                     List<FirebaseDB.Parking> parkingList = db.getParkings();
-
+                    ParkingMap.this.map.clear();
                     for(FirebaseDB.Parking parking : parkingList)
                     {
                         LatLng position = new LatLng(parking.location.getLatitude(), parking.location.getLongitude()); // convert from geopoint to latlng
