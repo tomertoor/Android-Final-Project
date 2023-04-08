@@ -11,25 +11,30 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <EditText
+        <fragment android:id="@+id/autocomplete_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+            tools:ignore="MissingConstraints" />
+
+        <!--<EditText
             android:id="@+id/searchbar2"
             android:layout_width="331dp"
             android:layout_height="56dp"
             android:background="#130C0C"
             android:backgroundTint="#252121"
             android:gravity="left|center_vertical"
+            android:hint="Where do you want to go ?"
             android:paddingLeft="20dp"
             android:paddingRight="10dp"
-            android:hint="Where do you want to go ?"
-            android:textColorHint="#7A7373"
             android:textColor="@color/white"
+            android:textColorHint="#7A7373"
 
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.698"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.001" />
+            app:layout_constraintVertical_bias="0.023" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

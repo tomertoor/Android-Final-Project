@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:onClick="openSearchMenu"
     tools:context=".SearchParkingFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -22,8 +21,8 @@
             android:paddingLeft="20dp"
             android:paddingRight="10dp"
             android:hint="Where do you want to go?"
-            android:onClick=""
             android:textColor="#7A7373"
+            
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
