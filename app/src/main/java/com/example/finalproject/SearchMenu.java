@@ -24,11 +24,8 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Properties;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SearchMenu#newInstance} factory method to
- * create an instance of this fragment.
- */
+import io.grpc.android.BuildConfig;
+
 public class SearchMenu extends Fragment {
 
     @Override
@@ -46,15 +43,12 @@ public class SearchMenu extends Fragment {
         View view = inflater.inflate(R.layout.fragment_search_menu, container, false);
 
 
-    if (!Places.isInitialized()) {
-            Places.initialize(getContext(), BuildConfig.MAPS_API_KEY, Locale.US);
 
-        }
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
         // Specify the types of place data to return.
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG));
 
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
@@ -65,7 +59,16 @@ public class SearchMenu extends Fragment {
 
             @Override
             public void onPlaceSelected(@NonNull Place place) {
-                Toast.makeText(getContext(), place.getName(), Toast.LENGTH_SHORT).show();
+                SearchParkingFragment searchParkingFragment = new SearchParkingFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("address", place.getAddress());
+                bundle.putString("name", place.getName());
+y                bundle.putParcelable("latlng", place.getLatLng());
+                bundle.putBoolean("isFirst", false);
+                searchParkingFragment.setArguments(bundle);
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container, searchParkingFragment).commit();
+
+
             }
         });
 

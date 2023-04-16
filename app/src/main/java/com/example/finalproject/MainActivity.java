@@ -11,6 +11,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.places.api.Places;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -33,6 +35,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.List;
+import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -42,7 +45,8 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
     Settings settingsFragment = new Settings();
     ParkingMap mapFragment = new ParkingMap();
-    SearchParkingFragment searchMenu = new SearchParkingFragment();
+    SearchParkingFragment searchParking = new SearchParkingFragment();
+    SearchMenu searchMenu = new SearchMenu();
     FirebaseDB.User loggedUser;
     FloatingActionButton btnAddParking;
     FirebaseDB db;
@@ -68,6 +72,10 @@ public class MainActivity extends AppCompatActivity {
         //FirebaseDB.Parking parking = new FirebaseDB.Parking(new GeoPoint(0,0), Timestamp.now(), "tomertom150@gmail.com");
         //
         //db.addParking(parking);
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), getString(R.string.MAPS_API_KEY), Locale.US);
+
+        }
         if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED) {
 
@@ -97,7 +105,10 @@ public class MainActivity extends AppCompatActivity {
 
                         break;
                     case R.id.search:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container, searchMenu).commit();
+                        Bundle args = new Bundle();
+                        args.putBoolean("isFirst", true);
+                        searchParking.setArguments(args);
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container, searchParking).commit();
                         break;
                     case R.id.settings:
                         getSupportFragmentManager().beginTransaction().replace(R.id.container, settingsFragment).commit();

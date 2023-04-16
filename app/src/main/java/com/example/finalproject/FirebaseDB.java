@@ -1,5 +1,8 @@
 package com.example.finalproject;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.location.Location;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -24,9 +27,16 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.example.finalproject.R;
 
 public class FirebaseDB {
     private static final String PARKING_COLLECTION = "parkings";
@@ -76,6 +86,7 @@ public class FirebaseDB {
             this.parkerName = parkerName;
         }
     }
+
 
     public FirebaseDB()
     {

@@ -28,6 +28,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.023" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/parkingranges"
+            android:layout_width="412dp"
+            android:layout_height="577dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.714" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>
