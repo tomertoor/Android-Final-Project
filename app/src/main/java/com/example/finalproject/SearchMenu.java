@@ -63,7 +63,7 @@ public class SearchMenu extends Fragment {
                 Bundle bundle = new Bundle();
                 bundle.putString("address", place.getAddress());
                 bundle.putString("name", place.getName());
-y                bundle.putParcelable("latlng", place.getLatLng());
+                bundle.putParcelable("latlng", place.getLatLng());
                 bundle.putBoolean("isFirst", false);
                 searchParkingFragment.setArguments(bundle);
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container, searchParkingFragment).commit();

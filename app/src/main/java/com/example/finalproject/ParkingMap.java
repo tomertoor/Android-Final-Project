@@ -1,6 +1,7 @@
 package com.example.finalproject;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -21,6 +22,7 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.dynamic.SupportFragmentWrapper;
@@ -36,16 +38,20 @@ import java.util.List;
 
 
 public class ParkingMap extends Fragment implements OnMapReadyCallback, LocationListener {
+    public static TextView speedText;
     GoogleMap map;
     protected LocationManager locationManager;
     protected LocationListener locationListener;
     public static LatLng currentLocation;
     private boolean isFirstLocation = true;
+
+    static ProgressDialog locate;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Initialize view
         View view = inflater.inflate(R.layout.fragment_parking_map, container, false);
+        speedText = view.findViewById(R.id.speed);
 
         // Initialize map fragment
         SupportMapFragment supportMapFragment = (SupportMapFragment)
@@ -84,6 +90,15 @@ public class ParkingMap extends Fragment implements OnMapReadyCallback, Location
     public void onLocationChanged(Location location) {
 
         LatLng newLocation = new LatLng(location.getLatitude(), location.getLongitude());
+        float speed = (float) (location.getSpeed() * 3.6);
+        speedText.setText(Float.toString(speed));
+
+        if(speed > 0.1)
+        {
+            //speedText.setText(Float.toString(speed));
+            int x = 1;
+            x +=1;
+        }
         ParkingMap.currentLocation = newLocation;
         if(isFirstLocation)
         {

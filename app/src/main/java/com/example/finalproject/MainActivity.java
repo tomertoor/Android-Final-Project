@@ -93,6 +93,9 @@ public class MainActivity extends AppCompatActivity {
         btnAddParking = findViewById(R.id.addParking);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
+        //ParkingManager.init(this);
+        //ParkingManager.SpeedTask task = new ParkingManager.SpeedTask(this);
+       // task.execute("string");
         getSupportFragmentManager().beginTransaction().replace(R.id.container, mapFragment).commit();
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
