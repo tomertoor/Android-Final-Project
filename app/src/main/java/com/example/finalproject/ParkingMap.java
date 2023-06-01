@@ -4,6 +4,8 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -30,10 +32,15 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -46,6 +53,8 @@ public class ParkingMap extends Fragment implements OnMapReadyCallback, Location
     private boolean isFirstLocation = true;
 
     static ProgressDialog locate;
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -80,10 +89,11 @@ public class ParkingMap extends Fragment implements OnMapReadyCallback, Location
                 Manifest.permission.ACCESS_COARSE_LOCATION
         });
 
-        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        /*locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);*/
         UpdateParkingsTask task = new UpdateParkingsTask();
         task.execute();
+
         return view;
     }
     @Override
@@ -91,14 +101,17 @@ public class ParkingMap extends Fragment implements OnMapReadyCallback, Location
 
         LatLng newLocation = new LatLng(location.getLatitude(), location.getLongitude());
         float speed = (float) (location.getSpeed() * 3.6);
-        speedText.setText(Float.toString(speed));
+
+        /*speedText.setText(Float.toString(speed));
 
         if(speed > 0.1)
         {
             //speedText.setText(Float.toString(speed));
             int x = 1;
             x +=1;
-        }
+        }*/
+
+
         ParkingMap.currentLocation = newLocation;
         if(isFirstLocation)
         {
@@ -123,7 +136,6 @@ public class ParkingMap extends Fragment implements OnMapReadyCallback, Location
         map.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
     }
 
-
     private class UpdateParkingsTask extends AsyncTask<Void, Integer, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
@@ -136,14 +148,19 @@ public class ParkingMap extends Fragment implements OnMapReadyCallback, Location
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    handler.postDelayed(this, 5000);
+                    handler.postDelayed(this, 10000);
                     FirebaseDB db = new FirebaseDB();
                     List<FirebaseDB.Parking> parkingList = db.getParkings();
                     ParkingMap.this.map.clear();
                     for(FirebaseDB.Parking parking : parkingList)
                     {
                         LatLng position = new LatLng(parking.location.getLatitude(), parking.location.getLongitude()); // convert from geopoint to latlng
-                        ParkingMap.this.map.addMarker(new MarkerOptions().position(position).title("Test"));
+                        StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("images/" + parking.parkerName);
+                        storageReference.getBytes(Long.MAX_VALUE).addOnSuccessListener(bytes -> {
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(bitmap);
+                            ParkingMap.this.map.addMarker(new MarkerOptions().position(position).title("Free since: " + parking.creationTime.toDate().toString())).setIcon(bitmapDescriptor);
+                        });
                     }
 
                 }

@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -40,6 +41,7 @@ import com.example.finalproject.R;
 
 public class FirebaseDB {
     private static final String PARKING_COLLECTION = "parkings";
+    private static final String USERS_COLLECTION = "users";
     private FirebaseAuth auth;
     private FirebaseFirestore fs;
     public static User currentUser = null;
@@ -107,7 +109,7 @@ public class FirebaseDB {
                     int x = 5;
                 }
             });
-            fs.collection("users").document(email).set(user);
+            fs.collection(USERS_COLLECTION).document(email).set(user);
             return SIGNUP_RESULTS.SUCCESS;
         }
         return SIGNUP_RESULTS.EMAIL_EXISTS;
@@ -140,6 +142,7 @@ public class FirebaseDB {
     public void addParking(Parking parking)
     {
         this.fs.collection(PARKING_COLLECTION).document(parking.parkerName).set(parking);
+        this.incrementParkingTimes(parking.parkerName);
     }
     public List<Parking> getParkings()
     {
@@ -153,5 +156,16 @@ public class FirebaseDB {
             parkingList.add(ParkingManager.convertMapToParking(i.getData()));
         }
         return parkingList;
+    }
+
+    private void incrementParkingTimes(String identifier)
+    {
+        this.fs.collection(USERS_COLLECTION).document(identifier).update("parkingTimes", FieldValue.increment(1));
+    }
+    public long getAmountOfParkings(String identifier)
+    {
+        Task<DocumentSnapshot> task = this.fs.collection(USERS_COLLECTION).document(identifier).get();
+        while(!task.isComplete()) {}
+        return (long)task.getResult().get("parkingTimes");
     }
 }

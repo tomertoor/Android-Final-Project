@@ -7,8 +7,8 @@
 
     <TextView
         android:id="@+id/name"
-        android:layout_width="151dp"
-        android:layout_height="29dp"
+        android:layout_width="158dp"
+        android:layout_height="42dp"
         android:text="TextView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -19,8 +19,8 @@
 
     <TextView
         android:id="@+id/timeToGetThere"
-        android:layout_width="167dp"
-        android:layout_height="28dp"
+        android:layout_width="155dp"
+        android:layout_height="40dp"
         android:text="TextView"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -57,7 +57,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="10dp"
-        android:layout_marginTop="84dp"
+        android:layout_marginTop="88dp"
         android:background="#DAD888"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="0dp" />

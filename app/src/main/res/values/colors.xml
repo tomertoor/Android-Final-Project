@@ -9,5 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="remove_parking">#F44336</color>
     <color name="add_parking">#FF03DAC5</color>
+    <color name="disabled_parking">#909399</color>
 
 </resources>

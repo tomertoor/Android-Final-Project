@@ -10,14 +10,9 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.finalproject.R;
 import com.google.firebase.Timestamp;
-import com.google.type.DateTime;
 
-import java.sql.Time;
-import java.time.Period;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -85,8 +80,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         long timeSinceParking = Timestamp.now().getSeconds() - cellData.creationTime.getSeconds();
         Date date = new Date(timeSinceParking);
 
-        holder.timeSinceParking.setText("Free since: " + date.toString() );//formatTime(timeSinceParking));
-
+        holder.timeSinceParking.setText("Free since: " + formatTime(timeSinceParking) );//formatTime(timeSinceParking));
+        holder.name.setText("Reported at " + cellData.creationTime.toDate());
 
         holder.timeToGetThere.setText(cellData.getTimeToGetThere() + " away");
         holder.address.setText("SDSA");

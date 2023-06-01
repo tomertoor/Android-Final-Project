@@ -16,7 +16,7 @@
         android:title=""/>
 
     <item
-        android:id="@+id/person"
+        android:id="@+id/profile"
         android:icon="@drawable/ic_baseline_person_24"
         android:title="Profile"/>
     <item

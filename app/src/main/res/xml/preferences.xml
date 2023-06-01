@@ -7,18 +7,19 @@
             android:key="automation"
             android:summary="Off/On"
             android:title="Manual/Automatic Parking" />
-        <CheckBoxPreference
-            android:key="automation"
-            android:summary="On/Off"
-            android:title="Manual/Automatic Parking" />
+
     </PreferenceCategory>
 
+
+
     <PreferenceCategory
-        android:summary="Measure units, "
-        android:title="Visibility" >
-        <CheckBoxPreference
-            android:key="speed"
-            android:summary="On/Off"
-            android:title="Keep me logged in" />
+        android:summary="Customize and update vehicle options "
+        android:title="Vehicle Options" >
+        <Preference
+            android:key="upload_photo"
+            android:title="Upload Photo"
+            android:summary="Tap to upload a photo"
+            android:icon="@drawable/baseline_camera_alt_24"
+            />
     </PreferenceCategory>
 </PreferenceScreen>

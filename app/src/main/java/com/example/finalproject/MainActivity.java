@@ -47,8 +47,9 @@ public class MainActivity extends AppCompatActivity {
     ParkingMap mapFragment = new ParkingMap();
     SearchParkingFragment searchParking = new SearchParkingFragment();
     SearchMenu searchMenu = new SearchMenu();
+    ProfileFragment profile = new ProfileFragment();
     FirebaseDB.User loggedUser;
-    FloatingActionButton btnAddParking;
+    public static FloatingActionButton btnAddParking;
     FirebaseDB db;
     ActivityResultLauncher<Intent> getUser = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
@@ -63,6 +64,11 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     });
+    public void hanldeSignup()
+    {
+        Intent signupIntent = new Intent(this, SignupActivity.class);
+        getUser.launch(signupIntent);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getSupportActionBar().hide();
@@ -85,6 +91,11 @@ public class MainActivity extends AppCompatActivity {
                             Manifest.permission.ACCESS_COARSE_LOCATION},
                     0);
         }
+        ParkingManager.init(this);
+        ParkingManager.SpeedTask manager = new ParkingManager.SpeedTask(this);
+        manager.execute();
+
+
         db.login("tomer@gmail.com", "tomer123!");
         loggedUser = FirebaseDB.currentUser;
 
@@ -116,6 +127,9 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.settings:
                         getSupportFragmentManager().beginTransaction().replace(R.id.container, settingsFragment).commit();
                         break;
+                    case R.id.profile:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container, profile).commit();
+                        break;
                 }
                 return false;
             }
@@ -124,30 +138,33 @@ public class MainActivity extends AppCompatActivity {
 
     public void toggleParking(View view)
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Are you sure?");
-        builder.setMessage("Are you sure you want to toggle parking mode?");
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if(isParking)
-                        {
-                            db.removeParking(FirebaseDB.currentUser.email);
-                            btnAddParking.setImageResource(R.drawable.ic_baseline_add_24);
-                            btnAddParking.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.add_parking)));
-                            isParking = false;
-                        }
-                        else
-                        {
-                            db.addParking(new FirebaseDB.Parking(new GeoPoint(ParkingMap.currentLocation.latitude, ParkingMap.currentLocation.longitude), Timestamp.now(), loggedUser.email));//loggedUser.username));
-                            btnAddParking.setImageResource(R.drawable.ic_baseline_remove_24);
-                            btnAddParking.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.remove_parking)));
-                            isParking = true;
-                        }
+        if(!Settings.isAutomated)
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Are you sure?");
+            builder.setMessage("Are you sure you want to toggle parking mode?");
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    if(isParking)
+                    {
+                        db.addParking(new FirebaseDB.Parking(new GeoPoint(ParkingManager.currentLocation.getLatitude(), ParkingManager.currentLocation.getLongitude()), Timestamp.now(), loggedUser.email));//loggedUser.username));
+                        btnAddParking.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.remove_parking)));
+                        isParking = false;
                     }
-                });
-        builder.setNegativeButton("No", null);
-        builder.show();
+                    else
+                    {
+                        db.removeParking(FirebaseDB.currentUser.email);
+
+                        btnAddParking.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.add_parking)));
+                        isParking = true;
+                    }
+                }
+            });
+            builder.setNegativeButton("No", null);
+            builder.show();
+        }
+
 
     }
 
