@@ -71,31 +71,35 @@ public class ParkingManager {
 
         private void isDriving()
         {
+            int countHighSpeed = 0;
+            int countDistance = 0;
             for(Location loc : locationList)
             {
-                if(loc.getSpeed() < DRIVING_SPEED)
+                if(loc.getSpeed() * 3.6 > DRIVING_SPEED)
                 {
-                    //SpeedTask.isDriving = false;
-                    return;
+                    countHighSpeed++;
                 }
             }
 
             for(int i = 0 ; i < locationList.size() - 1; i++)
             {
-                if (locationList.get(i).distanceTo(locationList.get(i + 1)) < MIN_DISTANCE_FOR_DRIVING)
+                if (locationList.get(i).distanceTo(locationList.get(i + 1)) > MIN_DISTANCE_FOR_DRIVING)
                 {
-                    //SpeedTask.isDriving = false;
-                    return;
+                    countDistance++;
                 }
             }
-            Toast.makeText(ctx, "I detected that you are driving", Toast.LENGTH_LONG).show();
-            SpeedTask.isDriving = true;
+            if(countHighSpeed + countDistance >= (locationList.size() / 4))
+            {
+                Toast.makeText(ctx, "I detected that you are driving", Toast.LENGTH_LONG).show();
+                SpeedTask.isDriving = true;
+            }
+
         }
         private boolean inferParking()
         {
             for(Location loc : locationList)
             {
-                if(loc.getSpeed() > PARKING_SPEED)
+                if(loc.getSpeed() * 3.6 > PARKING_SPEED)
                 {
                     isDriving();
                     return false;
@@ -138,7 +142,7 @@ public class ParkingManager {
                 boolean currentIsParked = false;
                 if(locationList.size() == MAX_LOCATION_LIST)
                 {
-                    //currentIsParked = inferParking();
+                    currentIsParked = inferParking();
                     //ParkingMap.speedText.setText((currentIsParked ? "True" : "False"));
 
                     Toast.makeText(activity, "Isparked: " + isParked + " Current is parked: " + currentIsParked + " is Driving: " + isDriving  , Toast.LENGTH_LONG).show();
