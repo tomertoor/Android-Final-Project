@@ -40,7 +40,7 @@
         android:onClick="toggleParking"
         android:src="@drawable/baseline_local_parking_24"
         app:layout_anchor="@id/bottomAppBar"
-        app:backgroundTint="@color/add_parking"
+        app:backgroundTint="@color/remove_parking"
         />
 
 

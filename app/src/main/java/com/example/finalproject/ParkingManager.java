@@ -62,17 +62,42 @@ public class ParkingManager {
         private static Location parkingLocation;
         LinkedList<Location> locationList = new LinkedList<>();
         LocationManager locationManager;
-        final int MAX_LOCATION_LIST = 20;
-        final int PARKING_SPEED = 8;
-        final float MAX_DISTANCE_FOR_PARKING = 2;
+        public final int MAX_LOCATION_LIST = 20;
+        public final int PARKING_SPEED = 8;
+        public final int DRIVING_SPEED = 15;
+        public final float MAX_DISTANCE_FOR_PARKING = 2;
+        public final float MIN_DISTANCE_FOR_DRIVING = 7;
+        public static boolean isDriving = false;
 
+        private void isDriving()
+        {
+            for(Location loc : locationList)
+            {
+                if(loc.getSpeed() < DRIVING_SPEED)
+                {
+                    //SpeedTask.isDriving = false;
+                    return;
+                }
+            }
 
+            for(int i = 0 ; i < locationList.size() - 1; i++)
+            {
+                if (locationList.get(i).distanceTo(locationList.get(i + 1)) < MIN_DISTANCE_FOR_DRIVING)
+                {
+                    //SpeedTask.isDriving = false;
+                    return;
+                }
+            }
+            Toast.makeText(ctx, "I detected that you are driving", Toast.LENGTH_LONG).show();
+            SpeedTask.isDriving = true;
+        }
         private boolean inferParking()
         {
             for(Location loc : locationList)
             {
                 if(loc.getSpeed() > PARKING_SPEED)
                 {
+                    isDriving();
                     return false;
                 }
             }
@@ -81,6 +106,7 @@ public class ParkingManager {
             {
                 if (locationList.get(i).distanceTo(locationList.get(i + 1)) > MAX_DISTANCE_FOR_PARKING)
                 {
+                    isDriving();
                     return false;
                 }
             }
@@ -105,7 +131,6 @@ public class ParkingManager {
             if(Settings.isAutomated)
             {
                 FirebaseDB db = new FirebaseDB();
-                Toast.makeText(activity, "SSS1", Toast.LENGTH_LONG).show();
                 if (locationList.size() == MAX_LOCATION_LIST) {
                     locationList.poll();
                 }
@@ -113,129 +138,61 @@ public class ParkingManager {
                 boolean currentIsParked = false;
                 if(locationList.size() == MAX_LOCATION_LIST)
                 {
-                    currentIsParked = inferParking();
-                    ParkingMap.speedText.setText((currentIsParked ? "True" : "False"));
+                    //currentIsParked = inferParking();
+                    //ParkingMap.speedText.setText((currentIsParked ? "True" : "False"));
 
+                    Toast.makeText(activity, "Isparked: " + isParked + " Current is parked: " + currentIsParked + " is Driving: " + isDriving  , Toast.LENGTH_LONG).show();
                     if (isParked && !currentIsParked && locationList.get(locationList.size()-1).distanceTo(parkingLocation) < 10)
+                    {
+
+                        db.addParking(new FirebaseDB.Parking(new GeoPoint(location.getLatitude(), location.getLongitude()), Timestamp.now(), FirebaseDB.currentUser.email));
+
+
+                        isParked = false;
+                        MainActivity.showParkingNotification(ctx, "You have left parking");
+
+                    }
+                    else if(isDriving && !isParked && currentIsParked)
                     {
                         AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
                         builder.setTitle("Have you just parked?").setMessage("We detected that you had just parked your vehicle.").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                db.addParking(new FirebaseDB.Parking(new GeoPoint(location.getLatitude(), location.getLongitude()), Timestamp.now(), FirebaseDB.currentUser.email));
-                            }
+                                List<FirebaseDB.Parking> parkings = db.getParkings();
+                                if(parkings.size() > 0)
+                                {
+                                    FirebaseDB.Parking closestParking = parkings.get(0);
+                                    for(FirebaseDB.Parking parking : parkings)
+                                    {
+                                        if(location.distanceTo(new Location(parking.location.toString())) < location.distanceTo(new Location(closestParking.location.toString())))
+                                        {
+                                            closestParking = parking;
+                                        }
+                                    }
+                                    float [] results = new float[5];
+                                    Location.distanceBetween(location.getLatitude(), location.getLongitude(), closestParking.location.getLatitude(), closestParking.location.getLongitude(), results);
+                                    if(results[0] < 10)
+                                    {
+                                        db.removeParking(closestParking.parkerName);
+                                    }
+                                }
+
+                                parkingLocation = locationList.get(locationList.size()-1);
+                                isParked = true;
+                                SpeedTask.isDriving = false;
+                                MainActivity.showParkingNotification(ctx, "You have just parked");                            }
                         }).setNegativeButton("No", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
 
                             }
-                        });
+                        }).show();
 
-                        isParked = false;
-                    }
-                    else if(!isParked && currentIsParked)
-                    {
-                        List<FirebaseDB.Parking> parkings = db.getParkings();
-                        if(parkings.size() > 0)
-                        {
-                            FirebaseDB.Parking closestParking = parkings.get(0);
-                            for(FirebaseDB.Parking parking : parkings)
-                            {
-                                if(location.distanceTo(new Location(parking.location.toString())) < location.distanceTo(new Location(closestParking.location.toString())))
-                                {
-                                    closestParking = parking;
-                                }
-                            }
-                            float [] results = new float[5];
-                            Location.distanceBetween(location.getLatitude(), location.getLongitude(), closestParking.location.getLatitude(), closestParking.location.getLongitude(), results);
-                            if(results[0] < 10)
-                            {
-                                db.removeParking(closestParking.parkerName);
-                            }
-                        }
 
-                        parkingLocation = locationList.get(locationList.size()-1);
-                        isParked = true;
                     }
                 }
                 }
 
-
-
-
-
-
-            /*speed = location.getSpeed();
-            float multiplier = 3.6f;
-            if(speed > 5)
-                if (maxSpeed < speed) {
-                    maxSpeed = speed;
-                }
-
-
-            localspeed = speed * multiplier;
-
-            filtSpeed = filter(filtSpeed, localspeed, 2);
-
-
-
-            NumberFormat numberFormat = NumberFormat.getNumberInstance();
-            numberFormat.setMaximumFractionDigits(0);
-
-
-
-            lat = location.getLatitude();
-            //speed=(float) location.getLatitude();
-            Log.d("net.mypapit.speedview", "Speed " + localspeed + "latitude: " + lat + " longitude: " + location.getLongitude());
-            ParkingMap.speedText.setText(numberFormat.format(filtSpeed));
-
-                    /*if (location.hasAltitude()) {
-                        tvAccuracy.setText(numberFormat.format(location.getAccuracy()) + " m");
-                    } else {
-                        tvAccuracy.setText("NIL");
-                    }
-
-            numberFormat.setMaximumFractionDigits(0);
-
-
-            if (location.hasBearing()) {
-
-                double bearing = location.getBearing();
-                String strBearing = "NIL";
-                if (bearing < 20.0) {
-                    strBearing = "North";
-                } else if (bearing < 65.0) {
-                    strBearing = "North-East";
-                } else if (bearing < 110.0) {
-                    strBearing = "East";
-                } else if (bearing < 155.0) {
-                    strBearing = "South-East";
-                } else if (bearing < 200.0) {
-                    strBearing = "South";
-                } else if (bearing < 250.0) {
-                    strBearing = "South-West";
-                } else if (bearing < 290.0) {
-                    strBearing = "West";
-                } else if (bearing < 345.0) {
-                    strBearing = "North-West";
-                } else if (bearing < 361.0) {
-                    strBearing = "North";
-                }
-
-                //tvHeading.setText(strBearing);
-            } else {
-                //tvHeading.setText("NIL");
-            }
-
-            NumberFormat nf = NumberFormat.getInstance();
-
-            nf.setMaximumFractionDigits(4);
-
-
-            //tvLat.setText(nf.format(location.getLatitude()));
-            //tvLon.setText(nf.format(location.getLongitude()));
-
-*/
         }
 
 

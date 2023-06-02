@@ -8,15 +8,20 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
@@ -51,6 +56,45 @@ public class MainActivity extends AppCompatActivity {
     FirebaseDB.User loggedUser;
     public static FloatingActionButton btnAddParking;
     FirebaseDB db;
+
+
+    /*private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }*/
+
+    public static void showParkingNotification(Context ctx, String message)
+    {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx, "parking_channel")
+                .setSmallIcon(R.drawable.baseline_local_parking_24)
+                .setContentTitle("Parking Alert")
+                .setContentText(message)
+                .setCategory(NotificationCompat.CATEGORY_CALL )
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        NotificationManager notificationManager = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Create a notification channel for Android Oreo and above
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("parking_channel", "Parking Channel", NotificationManager.IMPORTANCE_HIGH);
+            channel.setDescription("Alerts for parking.");
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        // Display the notification
+        notificationManager.notify(0, builder.build());
+    }
     ActivityResultLauncher<Intent> getUser = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult result) {
@@ -151,6 +195,8 @@ public class MainActivity extends AppCompatActivity {
                         db.addParking(new FirebaseDB.Parking(new GeoPoint(ParkingManager.currentLocation.getLatitude(), ParkingManager.currentLocation.getLongitude()), Timestamp.now(), loggedUser.email));//loggedUser.username));
                         btnAddParking.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.remove_parking)));
                         isParking = false;
+
+                        showParkingNotification(MainActivity.this, "You have left parking");
                     }
                     else
                     {
@@ -158,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
 
                         btnAddParking.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.add_parking)));
                         isParking = true;
+                        showParkingNotification(MainActivity.this, "You have just parked");
                     }
                 }
             });
