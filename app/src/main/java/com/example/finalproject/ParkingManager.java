@@ -68,7 +68,7 @@ public class ParkingManager {
         public final float MAX_DISTANCE_FOR_PARKING = 2;
         public final float MIN_DISTANCE_FOR_DRIVING = 7;
         public static boolean isDriving = false;
-
+        public static boolean asked = false;
         private void isDriving()
         {
             int countHighSpeed = 0;
@@ -151,46 +151,52 @@ public class ParkingManager {
 
                         db.addParking(new FirebaseDB.Parking(new GeoPoint(location.getLatitude(), location.getLongitude()), Timestamp.now(), FirebaseDB.currentUser.email));
 
-
+                        asked = false;
                         isParked = false;
                         MainActivity.showParkingNotification(ctx, "You have left parking");
 
                     }
                     else if(isDriving && !isParked && currentIsParked)
                     {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-                        builder.setTitle("Have you just parked?").setMessage("We detected that you had just parked your vehicle.").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                List<FirebaseDB.Parking> parkings = db.getParkings();
-                                if(parkings.size() > 0)
-                                {
-                                    FirebaseDB.Parking closestParking = parkings.get(0);
-                                    for(FirebaseDB.Parking parking : parkings)
+                        if(!asked)
+                        {
+                            asked = true;
+                            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                            builder.setTitle("Have you just parked?").setMessage("We detected that you had just parked your vehicle.").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    List<FirebaseDB.Parking> parkings = db.getParkings();
+                                    if(parkings.size() > 0)
                                     {
-                                        if(location.distanceTo(new Location(parking.location.toString())) < location.distanceTo(new Location(closestParking.location.toString())))
+                                        FirebaseDB.Parking closestParking = parkings.get(0);
+                                        for(FirebaseDB.Parking parking : parkings)
                                         {
-                                            closestParking = parking;
+                                            if(location.distanceTo(new Location(parking.location.toString())) < location.distanceTo(new Location(closestParking.location.toString())))
+                                            {
+                                                closestParking = parking;
+                                            }
+                                        }
+                                        float [] results = new float[5];
+                                        Location.distanceBetween(location.getLatitude(), location.getLongitude(), closestParking.location.getLatitude(), closestParking.location.getLongitude(), results);
+                                        if(results[0] < 10)
+                                        {
+                                            db.removeParking(closestParking.parkerName);
                                         }
                                     }
-                                    float [] results = new float[5];
-                                    Location.distanceBetween(location.getLatitude(), location.getLongitude(), closestParking.location.getLatitude(), closestParking.location.getLongitude(), results);
-                                    if(results[0] < 10)
-                                    {
-                                        db.removeParking(closestParking.parkerName);
-                                    }
+
+                                    parkingLocation = locationList.get(locationList.size()-1);
+                                    isParked = true;
+                                    SpeedTask.isDriving = false;
+                                    asked = true;
+                                    MainActivity.showParkingNotification(ctx, "You have just parked");                            }
+                            }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    asked = true;
                                 }
+                            }).show();
 
-                                parkingLocation = locationList.get(locationList.size()-1);
-                                isParked = true;
-                                SpeedTask.isDriving = false;
-                                MainActivity.showParkingNotification(ctx, "You have just parked");                            }
-                        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-
-                            }
-                        }).show();
+                        }
 
 
                     }
