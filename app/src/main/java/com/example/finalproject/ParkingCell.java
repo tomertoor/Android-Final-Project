@@ -84,17 +84,6 @@ public class ParkingCell extends FirebaseDB.Parking{
             return "Can't reach there";
 
         }
-        /*@Override
-        protected void onPostExecute(String s) {
-            try {
-                JSONObject jsonObject = new JSONObject(s);
-
-                timeToGetThere = jsonObject.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getString("text");
-
-            } catch (JSONException e) {
-            }
-
-        }*/
     }
 
 }

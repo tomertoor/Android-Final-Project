@@ -53,11 +53,8 @@ public class ParkingManager {
 
 
     public static class SpeedTask extends AsyncTask<String, Void, String> implements LocationListener {
-        GeoApiContext context = new GeoApiContext.Builder().apiKey(ctx.getString(R.string.MAPS_API_KEY)).build();
-        SpeedLimit[] speedLimits = new SpeedLimit[0];
         final MainActivity activity;
-        float speed = 0.0f;
-        double lat;
+
         private double maxSpeed = -100.0;
         private static Location parkingLocation;
         LinkedList<Location> locationList = new LinkedList<>();
@@ -90,7 +87,6 @@ public class ParkingManager {
             }
             if(countHighSpeed + countDistance >= (locationList.size() / 4))
             {
-                Toast.makeText(ctx, "I detected that you are driving", Toast.LENGTH_LONG).show();
                 SpeedTask.isDriving = true;
             }
 
@@ -143,9 +139,7 @@ public class ParkingManager {
                 if(locationList.size() == MAX_LOCATION_LIST)
                 {
                     currentIsParked = inferParking();
-                    //ParkingMap.speedText.setText((currentIsParked ? "True" : "False"));
 
-                    Toast.makeText(activity, "Isparked: " + isParked + " Current is parked: " + currentIsParked + " is Driving: " + isDriving  , Toast.LENGTH_LONG).show();
                     if (isParked && !currentIsParked && locationList.get(locationList.size()-1).distanceTo(parkingLocation) < 10)
                     {
 
@@ -208,75 +202,13 @@ public class ParkingManager {
 
         @SuppressLint("MissingPermission")
         protected void onPostExecute(String result) {
-            FirebaseDB db = new FirebaseDB();
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 
-            /*LocationListener listener = new LocationListener() {
-                float filtSpeed;
-                float localspeed;
-
-
-
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-                    // TODO Auto-generated method stub
-
-                }
-
-                @Override
-                public void onProviderEnabled(String provider) {
-                    ParkingMap.speedText.setText("STDBY");
-                    /*tvMaxSpeed.setText("NIL");
-
-                    tvLat.setText("LATITUDE");
-                    tvLon.setText("LONGITUDE");
-                    tvHeading.setText("HEADING");
-                    tvAccuracy.setText("ACCURACY");
-
-                }
-
-                @Override
-                public void onProviderDisabled(String provider) {
-                    ParkingMap.speedText.setText("nofix");
-
-
-
-                }
-
-            };*/
-
-
-            //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
-
 
         }
 
-        /**
-         * Simple recursive filter
-         *
-         * @param prev Previous value of filter
-         * @param curr New input value into filter
-         * @return New filtered value
-         */
-        private float filter(final float prev, final float curr, final int ratio) {
-            // If first time through, initialise digital filter with current values
-            if (Float.isNaN(prev))
-                return curr;
-            // If current value is invalid, return previous filtered value
-            if (Float.isNaN(curr))
-                return prev;
-            // Calculate new filtered value
-            return (float) (curr / ratio + prev * (1.0 - 1.0 / ratio));
-        }
 
 
     }
 
-    private boolean isLocationEnabled(Context mContext) {
-
-
-        LocationManager locationManager = (LocationManager)
-                mContext.getSystemService(Context.LOCATION_SERVICE);
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-    }
 }

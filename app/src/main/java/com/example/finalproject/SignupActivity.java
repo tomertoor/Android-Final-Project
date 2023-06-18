@@ -33,7 +33,7 @@ public class SignupActivity extends AppCompatActivity {
             }
         }
     });
-    @Override
+     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getSupportActionBar().hide();
         super.onCreate(savedInstanceState);
@@ -74,41 +74,35 @@ public class SignupActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Password invalid", Toast.LENGTH_SHORT).show();
             return;
         }
-        
+        FirebaseDB.SIGNUP_RESULTS result;
         try
         {
-            FirebaseDB.SIGNUP_RESULTS result = db.register(email, password, fullname, username);
+            result = db.register(email, password, fullname, username);
         }
         catch (FirebaseAuthInvalidCredentialsException e)
         {
             return;
         }
-        Intent intent = new Intent();
-        if (db.login(email, password))
+        if(result == FirebaseDB.SIGNUP_RESULTS.EMAIL_EXISTS)
         {
-            setResult(RESULT_OK, intent);
-            finish();
+            Toast.makeText(this, "This Email exists", Toast.LENGTH_SHORT).show();
         }
         else
         {
-            setResult(RESULT_CANCELED, intent);
+            if (db.login(email, password, true))
+            {
+                setResult(RESULT_OK, receiveIntent);
+                finish();
+            }
+            else
+            {
+                setResult(RESULT_CANCELED, receiveIntent);
+            }
         }
+
     }
     public boolean isNameValid(String name)
     {
-        /*if (firstname.length() == 0) {
-            return false;
-        }
-        for (int i = 0; i < firstname.length(); i++) {
-            if (!(firstname.charAt(i) > 'a' && firstname.charAt(i) < 'z' || firstname.charAt(i) > 'A' && firstname.charAt(i) < 'Z')) {
-                return false;
-            }
-            else if(firstname.charAt(i) == ' ')
-            {
-                continue;
-            }
-        }
-        return true;*/
         String expression = "^[a-zA-Z ]*$";
         return name.matches(expression);
     }

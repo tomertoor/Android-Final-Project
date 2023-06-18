@@ -31,13 +31,14 @@ public class LoginActivity extends AppCompatActivity {
         String password = etPassword.getText().toString();
         FirebaseDB db = new FirebaseDB();
 
-        if (db.login(username, password))
+        if (db.login(username, password, false))
         {
             setResult(RESULT_OK, intent);;
             finish();
         }
         else
         {
+            Toast.makeText(this, "Invalid credentials.", Toast.LENGTH_LONG).show();
             setResult(RESULT_CANCELED, intent);
         }
     }

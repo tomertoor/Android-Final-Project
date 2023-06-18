@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -27,13 +28,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 
 
 public class Settings extends PreferenceFragmentCompat {
-
-    private ListPreference mListPreference;
-
-
 
     private static final int REQUEST_CAMERA = 1;
     private static final int SELECT_FILE = 2;
@@ -42,7 +40,6 @@ public class Settings extends PreferenceFragmentCompat {
     private StorageReference storageReference;
     public static boolean isAutomated = false;
 
-    // ... onCreate and other methods ...
 
     private void showImagePickerDialog() {
         final CharSequence[] items = {"Take Photo", "Choose from Gallery", "Cancel"};
@@ -84,7 +81,20 @@ public class Settings extends PreferenceFragmentCompat {
                 uploadImageToFirebase();
             } else if (requestCode == SELECT_FILE) {
                 selectedImageUri = data.getData();
-                uploadImageToFirebase();
+                try {
+                    InputStream inputStream =  this.getContext().getContentResolver().openInputStream(selectedImageUri);
+                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    bitmap = Bitmap.createScaledBitmap(bitmap, 187, 250, false);
+                    selectedImageUri = getImageUri(bitmap);
+
+                    uploadImageToFirebase();
+                }
+                catch(Exception e)
+                {
+                    Toast.makeText(getContext(), "Upload failed", Toast.LENGTH_SHORT).show();
+
+                }
+
             }
         }
     }
@@ -97,10 +107,25 @@ public class Settings extends PreferenceFragmentCompat {
             // Upload the file to Firebase Storage
             imageRef.putFile(selectedImageUri)
                     .addOnSuccessListener(taskSnapshot -> {
-                        Toast.makeText(getContext(), "Image uploaded", Toast.LENGTH_SHORT).show();
+                        try
+                        {
+                            Toast.makeText(getContext(), "Image uploaded", Toast.LENGTH_SHORT).show();
+
+                        }
+                        catch (Exception e)
+                        {
+
+                        }
                     })
                     .addOnFailureListener(e -> {
-                        Toast.makeText(getContext(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        try {
+                            Toast.makeText(getContext(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+
+                        catch (Exception ex)
+                        {
+
+                        }
                     });
         } else {
             Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();

@@ -41,21 +41,18 @@ public class SearchParkingFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search_parking, container, false);;
         Bundle args = getArguments();
-        if(args.getBoolean("isFirst")) // if it is the first time this fragment is called then it means that a search wasnt commited.
-        {
-            etSearchBar = view.findViewById(R.id.searchbar);
-            etSearchBar.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                    SearchMenu menu = new SearchMenu();
+        etSearchBar = view.findViewById(R.id.searchbar);
+        etSearchBar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                SearchMenu menu = new SearchMenu();
 
-                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container, menu).commit();
-                    return false;
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container, menu).commit();
+                return false;
 
-                }
-            });
-        }
-        else
+            }
+        });
+        if(!args.getBoolean("isFirst")) // if it is the first time this fragment is called then it means that a search wasnt commited.
         {
             FirebaseDB db = new FirebaseDB();
             List<FirebaseDB.Parking> parkings = db.getParkings();
@@ -78,8 +75,6 @@ public class SearchParkingFragment extends Fragment {
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             adapter = new MyAdapter(getContext(), parkingRanges);
             recyclerView.setAdapter(adapter);
-
-
         }
 
         return view;

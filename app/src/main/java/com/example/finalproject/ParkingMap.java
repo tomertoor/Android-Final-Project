@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.dynamic.SupportFragmentWrapper;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -45,14 +46,10 @@ import java.util.List;
 
 
 public class ParkingMap extends Fragment implements OnMapReadyCallback, LocationListener {
-    public static TextView speedText;
     GoogleMap map;
     protected LocationManager locationManager;
-    protected LocationListener locationListener;
     public static LatLng currentLocation;
     private boolean isFirstLocation = true;
-
-    static ProgressDialog locate;
 
 
     @Override
@@ -60,7 +57,6 @@ public class ParkingMap extends Fragment implements OnMapReadyCallback, Location
                              Bundle savedInstanceState) {
         // Initialize view
         View view = inflater.inflate(R.layout.fragment_parking_map, container, false);
-        speedText = view.findViewById(R.id.speed);
 
         // Initialize map fragment
         SupportMapFragment supportMapFragment = (SupportMapFragment)
@@ -84,39 +80,46 @@ public class ParkingMap extends Fragment implements OnMapReadyCallback, Location
                             }
                         }
                 );
-        locationPermissionRequest.launch(new String[] {
+        locationPermissionRequest.launch(new String[]{
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
         });
 
-        /*locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);*/
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
         UpdateParkingsTask task = new UpdateParkingsTask();
         task.execute();
 
+        isFirstLocation = true;
+        if(this.map != null)
+        {
+            CameraUpdate center=CameraUpdateFactory.zoomTo(19.785f);
+            this.map.animateCamera(center);
+        }
+
         return view;
     }
+
     @Override
     public void onLocationChanged(Location location) {
 
         LatLng newLocation = new LatLng(location.getLatitude(), location.getLongitude());
-        float speed = (float) (location.getSpeed() * 3.6);
-
-        /*speedText.setText(Float.toString(speed));
-
-        if(speed > 0.1)
-        {
-            //speedText.setText(Float.toString(speed));
-            int x = 1;
-            x +=1;
-        }*/
 
 
         ParkingMap.currentLocation = newLocation;
-        if(isFirstLocation)
-        {
+        if (isFirstLocation && this.map != null) {
             map.moveCamera(CameraUpdateFactory.newLatLng(ParkingMap.currentLocation));
+
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 19.875f);
+            map.animateCamera(cameraUpdate);
             isFirstLocation = false;
+        }
+        else
+        {
+
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
+
+            map.animateCamera(cameraUpdate);
         }
     }
 
@@ -125,15 +128,18 @@ public class ParkingMap extends Fragment implements OnMapReadyCallback, Location
         this.map = googleMap;
         this.map.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.mapstyle));
         this.map.setMyLocationEnabled(true);
+        CameraUpdate center=CameraUpdateFactory.zoomTo(19.785f);
+        this.map.animateCamera(center);
+        map.setOnCameraChangeListener(cameraPosition -> {
+            if(cameraPosition.zoom < 15)
+            {
+                CameraUpdate zoomUpdate = CameraUpdateFactory.zoomTo(19.2f);
+                map.animateCamera(zoomUpdate);
 
-        new Handler().postDelayed(() -> {}, 1000 * 20);
-        // Add a marker in Sydney and move the camera
-        /*LatLng
-        LatLng sydney = new LatLng(-34, 151);
-        map.addMarker(new MarkerOptions()
-                .position(sydney)
-                .title("Marker in Sydney"));
-        map.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
+            }
+        });
+
+
     }
 
     private class UpdateParkingsTask extends AsyncTask<Void, Integer, Void> {
@@ -148,6 +154,7 @@ public class ParkingMap extends Fragment implements OnMapReadyCallback, Location
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+
                     handler.postDelayed(this, 10000);
                     FirebaseDB db = new FirebaseDB();
                     List<FirebaseDB.Parking> parkingList = db.getParkings();
@@ -160,6 +167,8 @@ public class ParkingMap extends Fragment implements OnMapReadyCallback, Location
                             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                             BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(bitmap);
                             ParkingMap.this.map.addMarker(new MarkerOptions().position(position).title("Free since: " + parking.creationTime.toDate().toString())).setIcon(bitmapDescriptor);
+                        }).addOnFailureListener(runnable -> {
+                            ParkingMap.this.map.addMarker(new MarkerOptions().position(position).title("Free since: " + parking.creationTime.toDate().toString()));
                         });
                     }
 

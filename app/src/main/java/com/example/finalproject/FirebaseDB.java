@@ -100,6 +100,7 @@ public class FirebaseDB {
         User user = new User(email, password, fullName, username);
         boolean exists;
         Task<SignInMethodQueryResult> task = this.auth.fetchSignInMethodsForEmail(email);
+        while(!task.isComplete()) {}
         boolean isNewUser =  task.getResult().getSignInMethods().isEmpty();
         if(isNewUser)
         {
@@ -110,23 +111,36 @@ public class FirebaseDB {
                 }
             });
             fs.collection(USERS_COLLECTION).document(email).set(user);
+            fs.collection(USERS_COLLECTION).document(email).update("parkingTimes", 0);
             return SIGNUP_RESULTS.SUCCESS;
         }
         return SIGNUP_RESULTS.EMAIL_EXISTS;
 
     }
 
-    public boolean login(String email, String password)
+    public boolean login(String email, String password, boolean isAfterRegister)
     {
         FirebaseUser user = this.auth.getCurrentUser();
         Task<AuthResult> task = this.auth.signInWithEmailAndPassword(email, password);
         user = this.auth.getCurrentUser();
         while(!task.isComplete()) {}
-        if(!task.isSuccessful())
+        if(isAfterRegister && !task.isSuccessful())
+        {
+            while(!task.isSuccessful())
+            {
+                task = this.auth.signInWithEmailAndPassword(email, password);
+                while(!task.isComplete()) {}
+            }
+        }
+        else if(!isAfterRegister && !task.isSuccessful())
         {
             return false;
         }
-        FirebaseDB.currentUser = new User(email, password, "", "", this.auth.getCurrentUser());
+
+        Task<DocumentSnapshot> fireStoreTask = fs.collection("users").document(email).get();
+        while(!fireStoreTask.isComplete()) {}
+
+        FirebaseDB.currentUser = new User(email, password, fireStoreTask.getResult().get("fullName").toString(), fireStoreTask.getResult().get("username").toString(), this.auth.getCurrentUser());
         return true;
     }
 

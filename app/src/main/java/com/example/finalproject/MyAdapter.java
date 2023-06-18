@@ -84,7 +84,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         holder.name.setText("Reported at " + cellData.creationTime.toDate());
 
         holder.timeToGetThere.setText(cellData.getTimeToGetThere() + " away");
-        holder.address.setText("SDSA");
     }
 
     @Override
@@ -97,7 +96,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         TextView name;
         TextView timeSinceParking;
         TextView timeToGetThere;
-        TextView address;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -105,7 +103,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             name = itemView.findViewById(R.id.name);
             timeSinceParking = itemView.findViewById(R.id.timeSinceParking);
             timeToGetThere = itemView.findViewById(R.id.timeToGetThere);
-            address = itemView.findViewById(R.id.address);
         }
     }
 }

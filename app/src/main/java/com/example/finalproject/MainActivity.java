@@ -51,28 +51,11 @@ public class MainActivity extends AppCompatActivity {
     Settings settingsFragment = new Settings();
     ParkingMap mapFragment = new ParkingMap();
     SearchParkingFragment searchParking = new SearchParkingFragment();
-    SearchMenu searchMenu = new SearchMenu();
     ProfileFragment profile = new ProfileFragment();
     FirebaseDB.User loggedUser;
     public static FloatingActionButton btnAddParking;
     FirebaseDB db;
 
-
-    /*private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }*/
 
     public static void showParkingNotification(Context ctx, String message)
     {
@@ -108,20 +91,14 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     });
-    public void hanldeSignup()
-    {
-        Intent signupIntent = new Intent(this, SignupActivity.class);
-        getUser.launch(signupIntent);
-    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getSupportActionBar().hide();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         db = new FirebaseDB();
-        //FirebaseDB.Parking parking = new FirebaseDB.Parking(new GeoPoint(0,0), Timestamp.now(), "tomertom150@gmail.com");
-        //
-        //db.addParking(parking);
+
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), getString(R.string.MAPS_API_KEY), Locale.US);
 
@@ -135,22 +112,20 @@ public class MainActivity extends AppCompatActivity {
                             Manifest.permission.ACCESS_COARSE_LOCATION},
                     0);
         }
+
+
+        //db.login("tomera@gmail.com", "Tpmer123", false);
+        Intent signupIntent = new Intent(this, SignupActivity.class);
+        getUser.launch(signupIntent);
+
+
         ParkingManager.init(this);
         ParkingManager.SpeedTask manager = new ParkingManager.SpeedTask(this);
         manager.execute();
 
-
-        db.login("tomer@gmail.com", "tomer123!");
-        loggedUser = FirebaseDB.currentUser;
-
-        //Intent signupIntent = new Intent(this, SignupActivity.class);
-        //getUser.launch(signupIntent);
         btnAddParking = findViewById(R.id.addParking);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
-        //ParkingManager.init(this);
-        //ParkingManager.SpeedTask task = new ParkingManager.SpeedTask(this);
-       // task.execute("string");
         getSupportFragmentManager().beginTransaction().replace(R.id.container, mapFragment).commit();
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -213,11 +188,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-    }
-
-    public void searchFragment()
-    {
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, searchMenu).commit();
     }
 
 }

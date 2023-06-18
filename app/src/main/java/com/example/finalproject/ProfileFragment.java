@@ -22,11 +22,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ProfileFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ProfileFragment extends Fragment {
 
 
@@ -57,19 +52,28 @@ public class ProfileFragment extends Fragment {
 
         FirebaseDB db = new FirebaseDB();
         LocationManager manager = (LocationManager) getActivity().getSystemService( Context.LOCATION_SERVICE );
-        gpsEnabled.setText(((manager.isLocationEnabled() ? "Enabled" : "Disabled")));
-        long parkingAmounts = db.getAmountOfParkings(FirebaseDB.currentUser.email);
-        parkingsReported.setText(parkingAmounts +"");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            gpsEnabled.setText(((manager.isLocationEnabled() ? "Enabled" : "Disabled")));
+        }
+        try
+        {
+            long parkingAmounts = db.getAmountOfParkings(FirebaseDB.currentUser.email);
+            parkingsReported.setText(parkingAmounts +"");
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("images/" + FirebaseDB.currentUser.email);
+
+            storageReference.getBytes(Long.MAX_VALUE).addOnSuccessListener(bytes -> {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                profileView.setImageBitmap(bitmap);
+            });
+
+        }
+        finally
+        {
+        }
         email.setText(FirebaseDB.currentUser.email);
         fullName.setText(FirebaseDB.currentUser.fullName);
 
 
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("images/" + FirebaseDB.currentUser.email);
-
-        storageReference.getBytes(Long.MAX_VALUE).addOnSuccessListener(bytes -> {
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            profileView.setImageBitmap(bitmap);
-        });
 
 
         if(MainActivity.isParking || ParkingManager.isParked)
